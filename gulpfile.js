@@ -1,5 +1,5 @@
 var gulp = require('gulp');
-var mocha = require('gulp-mocha');
+var mocha = require('gulp-spawn-mocha');
 
 
 // Include Our Plugins
@@ -31,9 +31,17 @@ gulp.task('scripts', function() {
         .pipe(refresh(server))
 })
 
+function test() {
+  return gulp.src(['test/*.test.js'], {read: false}).pipe(mocha({
+    r: 'test/setup.js',
+    R: 'spec'
+  })).on('error', console.warn.bind(console));
+}
+
 gulp.task('test', function () {
-    gulp.src('test/*.js')
-        .pipe(mocha({reporter: 'nyan'}));
+  return test().on('error', function (e) {
+    // throw e;
+  });
 });
 
 // livereload server
@@ -46,10 +54,11 @@ gulp.task('lr-server', function() {
 
 
 
+
 // Rerun the task when a file changes
 gulp.task('watch', function () {
-  gulp.watch(['src/**/*.js'], ['scripts']);
-  gulp.watch(['test/**/*.js'], ['scripts']);
+  gulp.watch(['src/**/*.js'], ['scripts', test]);
+  gulp.watch(['test/**/*.js'], ['scripts', test]);
 });
 
 
