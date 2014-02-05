@@ -75,23 +75,40 @@ MasonryLayout.prototype._addNewRow = function() {
  * @return {Boolean}
  */
 MasonryLayout.prototype._checkIfPointFitsRect = function(position, width, height) {
-  var dx, i, x, y;
+  var dx, i, x, y, j, col, row, matrix;
+  console.log('_checkIfPointFitsRect', position, width, height);
+
+
+
+  matrix = this._matrix;
 
   x = position.x;
   y = position.y;
-  if (!this._matrix[y]) {
-    return true;
+
+  // test out of bounds
+  var outOfBoundsX = (x+width > this._nCols);
+  if (outOfBoundsX) {
+    return false;
   }
-  // see if it fits on width
-  for (i = 0; i < width; i++) {
-    // step through width, see if taken
-    if (this._matrix[y][x+i] === 1 || x+i >= this._nCols) {
-      return false;
+
+  // see if all the points are empty
+  for (i = 0; i < height; i++) {
+    row = (y+i);
+    if (!matrix[row]) {
+      // row doesn't exist
+      // no row will exist after either
+      return true;
+    }
+    // step through this row's columns
+    for (j = 0; j < width; j++) {
+      col = (x+j);
+
+      // test busy
+      if (matrix[row][col] === 1) {
+        return false;
+      }
     }
   }
-
-
-  // TODO see if it
 
   return true;
 };
@@ -223,7 +240,7 @@ Masonry.prototype.positionItemToPoint = function($item, point) {
 
 Masonry.prototype.calculateRowHeight = function() {
   var len = this.items.length;
-  var rowHeight = 200; // neeeh
+  var rowHeight = 200; // FIXME
 
   for (var i = 0; i < len; i++) {
     var $item = this.items[i];
@@ -247,9 +264,6 @@ Masonry.prototype.reLayout = function() {
 
   var nCols = Math.floor(this.element.offsetWidth / this.options.columnWidth);
   var layout = new MasonryLayout(nCols);
-
-  console.log('rowHeight', this.rowHeight);
-  console.log('nCols', nCols);
 
   var len = this.items.length;
   for (var i = 0; i < len; i++) {

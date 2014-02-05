@@ -65,7 +65,7 @@ Masonry.prototype.positionItemToPoint = function($item, point) {
 
 Masonry.prototype.calculateRowHeight = function() {
   var len = this.items.length;
-  var rowHeight = 200; // neeeh
+  var rowHeight = 200; // FIXME
 
   for (var i = 0; i < len; i++) {
     var $item = this.items[i];
@@ -89,9 +89,6 @@ Masonry.prototype.reLayout = function() {
 
   var nCols = Math.floor(this.element.offsetWidth / this.options.columnWidth);
   var layout = new MasonryLayout(nCols);
-
-  console.log('rowHeight', this.rowHeight);
-  console.log('nCols', nCols);
 
   var len = this.items.length;
   for (var i = 0; i < len; i++) {
