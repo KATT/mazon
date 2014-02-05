@@ -8,5 +8,7 @@ chai.use(require('sinon-chai'));
 global.sinon = require('sinon');
 
 
+global.Masonry = require('../src/masonry');
 global.MasonryLayout = require('../src/layout');
+global.MasonryLayoutPoint = require('../src/layout-point');
 

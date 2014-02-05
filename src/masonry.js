@@ -1,4 +1,17 @@
-var layout = require('./layout');
+var MasonryLayout = require('./layout');
 
 
-layout();
+function Masonry(element) {
+	this.element = element;
+
+
+
+}
+
+
+
+Masonry.prototype.addElement = function(element) {
+
+};
+
+module.exports = Masonry;

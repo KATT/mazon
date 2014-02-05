@@ -24,17 +24,17 @@ gulp.task('lint', function() {
 gulp.task('scripts', function() {
     gulp.src(['src/**/*.js'])
         .pipe(browserify({
-        	debug: !gulp.env.production
+        	// debug: !gulp.env.production
         }))
         .pipe(concat('all.js'))
-        .pipe(gulp.dest('build'))
+        .pipe(gulp.dest('build/'))
         .pipe(refresh(server))
 })
 
 function test() {
   return gulp.src(['test/*.test.js'], {read: false}).pipe(mocha({
     r: 'test/setup.js',
-    R: 'spec'
+    R: 'nyan'
   })).on('error', console.warn.bind(console));
 }
 
