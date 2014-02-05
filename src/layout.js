@@ -8,10 +8,11 @@ function MyError() {
  * MasonryLayout, helps where to put rectangles in an X*Y grid, automatically extending vertically
  *
  * @param {Number} Number of columns that this layout contains
+ * @param {Array}  (Optional) i.e [[1, 0, 0, 1]] produces a one-line 4col matrix with two free slots in middle
  */
-function MasonryLayout(_nCols) {
+function MasonryLayout(_nCols, matrix) {
   this._nCols = _nCols;
-  this._matrix = [];
+  this._matrix = matrix || [];
 }
 
 /**
@@ -47,6 +48,14 @@ MasonryLayout.prototype._findNextFreePoint = function(skip) {
   // we didn't find any free space in the whole Matrix!
   // return first position of next line
   return new MasonryLayoutPoint(0, _matrix.length);
+};
+
+MasonryLayout.prototype._addNewRow = function() {
+  y = this._matrix.length;
+  this._matrix[y] = [];
+  for (i = 0; i < this._nCols; i++) {
+    this._matrix[y][i] = 0;
+  }
 };
 
 
@@ -118,12 +127,13 @@ MasonryLayout.prototype.addRect = function(width, height) {
   var y = position.y;
   var x = position.x;
   var i;
-  // if row doesn't exist, add row
-  if (!this._matrix[y]) {
-    this._matrix[y] = [];
-    for (i = 0; i < this._nCols; i++) {
-      this._matrix[y][i] = 0;
+
+  // add block on height
+  for (i = 0; i < height; i++) {
+    if (!this._matrix[y+i]) {
+      this._addNewRow();
     }
+    this._matrix[y+i][x] = 1;
   }
 
   // add block on width
@@ -133,18 +143,6 @@ MasonryLayout.prototype.addRect = function(width, height) {
 
   return position;
 };
-
-
-/**
- * Set matrix layout
- * @param {Array} i.e [[1, 0, 0, 1]] produces a one-line 4col matrix with two free slots in middle
- */
-MasonryLayout.prototype.setMatrix = function(matrix) {
-  this._matrix = matrix;
-
-  return this;
-};
-
 
 
 module.exports = MasonryLayout;

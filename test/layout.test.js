@@ -51,17 +51,25 @@ describe('MasonryLayout', function() {
 
 
   it('should find empty slots in matrix and add new pieces there', function() {
-    layout.setMatrix([
+    // FIXME don't do this, accessing "private property"
+    layout._matrix = [
       [1, 0, 0, 1]
-    ]);
+    ]
 
     expect(layout.addRect(3, 1)).to.deep.equal({x:0,y:1});
     expect(layout.addRect(2, 1)).to.deep.equal({x:1,y:0});
   });
 
   it('should add a vertical block', function() {
-    expect(layout.addRect(1, 2)).to.deep.equal({x:0, y:0});
-    expect(layout.getPositionForRect(1, 1)).to.deep.equal({x:1, y:0});
+    // FIXME don't do this, accessing "private property"
+    layout._matrix = [
+      [1, 1, 0, 1],
+      [1, 1, 0, 1]
+    ];
+    expect(layout.addRect(1, 2)).to.deep.equal({x:2, y:0});
+
+    // should have filled up matrix so next free position is on next line
+    expect(layout.getPositionForRect(1, 1)).to.deep.equal({x:0, y:2});
   });
 
 
