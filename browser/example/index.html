@@ -4,14 +4,58 @@
     <title>Browserify Example</title>
     <script src="../dist/masonry.standalone.min.js"></script>
   </head>
+  <style type="text/css">
+    * { box-sizing: border-box; }
+
+    article {
+      border: 5px solid #222;
+      width: 100px;
+      height: 100px;
+
+      background: #f5e664;
+      color: #222;
+
+      line-height: 100px;
+      text-align: center;
+    }
+    article.two-width {
+      width: 200px;
+    }
+    article.two-height {
+      height: 200px;
+      line-height: 200px;
+    }
+  </style>
   <body>
-    <p><span id="q1">7 + 5 =</span> <span id="a1">???</span></p>
-    <p><span id="q2">6 * 7 =</span> <span id="a2">???</span></p>
-    <p>If you see the result on the right side of the equations, everything
-    worked fine. If you see question marks, something went wrong.</p>
+    <section id="masonry">
+      <article>1</article>
+      <article class="two-width">2</article>
+      <article>3</article>
+      <article>4</article>
+      <article>5</article>
+      <article>6</article>
+      <article class="two-width">7</article>
+      <article>8</article>
+      <article class="two-height two-width">9</article>
+      <article class="two-height">10</article>
+      <article>11</article>
+      <article>12</article>
+      <article class="two-width">13</article>
+      <article>14</article>
+      <article>15</article>
+      <article>16</article>
+      <article>17</article>
+      <article class="two-width">18</article>
+      <article>19</article>
+      <article>20</article>
+      <article>21</article>
+    </section>
+
     <script>
-      document.getElementById('a1').innerHTML = masonry.add(7, 5)
-      document.getElementById('a2').innerHTML = masonry.mult(6, 7)
+      var m = new masonry('masonry');
+      window.onresize = function (argument) {
+        m.reLayout();
+      };
     </script>
   </body>
 </html>
