@@ -38,16 +38,29 @@ Masonry.prototype.sortItems = function() {
 };
 
 Masonry.prototype.positionItemToPoint = function($item, point) {
-  var x = point.x * this.options.columnWidth;
-  var y = point.y * this.rowHeight;
+  var x = point.x * this.options.columnWidth + 'px';
+  var y = point.y * this.rowHeight + 'px';
 
   console.log($item, x, y, point);
 
-  // temp, change to translate3d
-  $item.style.position = 'absolute';
+  var isFirstTime = ($item.style.position !== 'absolute'); // TODO better check
 
-  $item.style.left = x + 'px';
-  $item.style.top = y + 'px';
+
+  if (isFirstTime) {
+    $item.style.position = 'absolute'
+
+    // make sure we don't animate in on render
+    $item.style.display = 'none';
+    $item.offsetHeight;
+    $item.style.display = 'block';
+  }
+  // TODO below, check for translate3d support + vendor prefix
+  if (true) {
+    $item.style.webkitTransform = 'translate3d('+x+','+y+',0)';
+  } else {
+    $item.style.left = x;
+    $item.style.top = y;
+  }
 };
 
 Masonry.prototype.calculateRowHeight = function() {

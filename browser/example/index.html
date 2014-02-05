@@ -2,6 +2,7 @@
   <head>
     <meta charset="utf-8">
     <title>Browserify Example</title>
+    <script src="../../node_modules/lodash/dist/lodash.underscore.min.js"></script>
     <script src="../dist/masonry.standalone.min.js"></script>
   </head>
   <style type="text/css">
@@ -17,6 +18,8 @@
 
       line-height: 100px;
       text-align: center;
+
+      -webkit-transition: all .8s ease-out;
     }
     article.two-width {
       width: 200px;
@@ -53,9 +56,16 @@
 
     <script>
       var m = new masonry('masonry');
-      window.onresize = function (argument) {
+
+      function throttle(method, scope) {
+        clearTimeout(method._tId);
+        method._tId= setTimeout(function(){
+            method.call(scope);
+        }, 100);
+      }
+      window.onresize = _.throttle(function (argument) {
         m.reLayout();
-      };
+      }, 200);
     </script>
   </body>
 </html>
