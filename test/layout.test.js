@@ -73,6 +73,16 @@ describe('MasonryLayout', function() {
   });
 
 
+  it('should add a 2x2 block', function() {
+    expect(layout.addRect(2, 2));
+
+    expect(layout._matrix).to.deep.equal([
+      [1,1,0,0],
+      [1,1,0,0]
+    ]);
+  });
+
+
   // it('should throw error when trying to add too wide pieces', function() {
   //   expect(layout.addRect(5, 1)).to.throw(new Error);
   // });

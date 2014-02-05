@@ -1,9 +1,5 @@
 var MasonryLayoutPoint = require('./layout-point');
 
-function MyError() {
-    Error.apply(this, arguments);
-}
-
 /**
  * MasonryLayout, helps where to put rectangles in an X*Y grid, automatically extending vertically
  *
@@ -127,19 +123,20 @@ MasonryLayout.prototype.addRect = function(width, height) {
   var y = position.y;
   var x = position.x;
   var i;
+  var j;
 
-  // add block on height
   for (i = 0; i < height; i++) {
+    // add new row if needed
     if (!this._matrix[y+i]) {
       this._addNewRow();
     }
-    this._matrix[y+i][x] = 1;
+
+    // add block on width and height
+    for (j = 0; j < width; j++) {
+      this._matrix[y+i][j+x] = 1;
+    }
   }
 
-  // add block on width
-  for (i = 0; i < width; i++) {
-    this._matrix[y][i+x] = 1;
-  };
 
   return position;
 };
