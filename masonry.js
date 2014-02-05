@@ -1,4 +1,4 @@
-var MasonryLayout = require('./layout');
+var MasonryLayout = require('./lib/layout');
 
 
 function Masonry(element) {
