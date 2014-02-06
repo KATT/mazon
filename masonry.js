@@ -16,8 +16,8 @@ function extend(o1, o2) {
 }
 
 function Masonry(elementID, opts) {
-  this.elementID = elementID
-	this.element = document.getElementById(elementID);
+  this.viewportID = elementID;
+	this.viewport = document.getElementById(elementID);
 
   this.options = {};
   this.options = extend(this.options, defaultOptions);
@@ -42,7 +42,7 @@ Masonry.prototype.filterItems = function() {
 Masonry.prototype.sortItems = function() {
 
   // TODO
-  // Change the order of `this.element.children`s' in the DOM
+  // Change the order of `this.viewport.children`s' in the DOM
   // only care about position of `this.filteredItems`
 
 };
@@ -99,16 +99,26 @@ Masonry.prototype.calculateRowHeight = function() {
   this.rowHeight  = rowHeight;
 };
 Masonry.prototype.calculateNumberOfColumns = function() {
-  var nCols = (this.element.offsetWidth / this.options.columnWidth);
-  var nColsMinusGutters = (this.element.offsetWidth + this.options.gutterSize) / (this.options.columnWidth + this.options.gutterSize);
-  console.log('w/o gutters', nCols);
-  console.log('w gutters', nColsMinusGutters);
+  // var nCols = (this.viewport.offsetWidth / this.options.columnWidth);
+  var nColsMinusGutters = (this.viewport.offsetWidth + this.options.gutterSize) / (this.options.columnWidth + this.options.gutterSize);
+  // console.log('w/o gutters', nCols);
+  // console.log('w gutters', nColsMinusGutters);
 
   this.numberOfColumns = Math.floor(nColsMinusGutters);
 };
 
+Masonry.prototype.resizeViewPort = function() {
+  var numberOfRows = this.layout.getNumberOfRows();
+
+  // auto-adjusts on width
+  // var width = (this.numberOfColumns * this.options.columnWidth) + (this.numberOfColumns-1) * this.options.gutterSize;
+  var height = (numberOfRows * this.rowHeight) + (numberOfRows-1) * this.options.gutterSize;
+
+  this.viewport.style.height = height + 'px';
+};
+
 Masonry.prototype.reLayout = function() {
-  this.items = [].slice.call(this.element.children);
+  this.items = [].slice.call(this.viewport.children);
 
   this.filterItems();
   this.sortItems();
@@ -116,7 +126,7 @@ Masonry.prototype.reLayout = function() {
   this.calculateRowHeight();
   this.calculateNumberOfColumns();
 
-  var layout = new MasonryLayout(this.numberOfColumns);
+  this.layout = new MasonryLayout(this.numberOfColumns);
 
   var len = this.items.length;
   for (var i = 0; i < len; i++) {
@@ -131,11 +141,13 @@ Masonry.prototype.reLayout = function() {
     itemRowSpan = Math.ceil(itemRowSpan);
 
 
-    var position = layout.addRect(itemColSpan, itemRowSpan);
+    var position = this.layout.addRect(itemColSpan, itemRowSpan);
 
     this.positionItemToPoint($item, position);
 
   }
+
+  this.resizeViewPort();
 };
 
 module.exports = Masonry;
