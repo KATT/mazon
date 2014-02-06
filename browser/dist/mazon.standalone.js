@@ -208,20 +208,25 @@ function Masonry(elementID, opts) {
 
 
 Masonry.prototype.filterItems = function() {
-  // TODO
-  // loop through this.items
-  // toggle "hidden" classes to items
-  // add vissible `this.filteredItems`
+  this.filteredItems = [];
 
-  // (temp) copy filtered items
-  this.filteredItems = this.items.slice(0);
+  var len = this.items.length;
+  for (var i = 0; i < len; i++) {
+    var $item = this.items[i];
+    // TODO
+    // toggle "hidden" classes to $item
+    // add vissible `this.filteredItems`
+    if (true) {
+      this.filteredItems.push($item);
+    }
+  }
 };
 
 
 Masonry.prototype.sortItems = function() {
 
   // TODO
-  // Change the order of `this.viewport.children`s' in the DOM
+  // Change the order of `this.viewport.children`s in the DOM
   // only care about position of `this.filteredItems`
 
 };
@@ -331,6 +336,10 @@ Masonry.prototype.reLayout = function() {
   this.positionItems();
 
   this.resizeViewPort();
+
+  // TODO
+  // some kind of trigger when reLayout is done?
+  // could be used to clean up un-used items from the DOM tree etc
 };
 
 module.exports = Masonry;
