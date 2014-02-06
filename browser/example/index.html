@@ -2,7 +2,34 @@
   <head>
     <meta charset="utf-8">
     <title>Browserify Example</title>
-    <script src="../../node_modules/lodash/dist/lodash.underscore.min.js"></script>
+    <script>
+      function debounce(fn, delay) {
+        var timeout;
+        return function() {
+          var args = arguments;
+          var context = this;
+
+          clearTimeout(timeout)
+          timeout = setTimeout(function() {
+            return fn.apply(context, args)
+          }, delay);
+        };
+      }
+      function throttle(fn, delay) {
+        var timeout;
+        return function() {
+          var args = arguments;
+          var context = this;
+          if (!timeout) {
+            timeout = setTimeout(function() {
+              timeout = 0;
+              return fn.apply(context, args)
+            }, delay);
+          }
+        };
+      }
+
+    </script>
     <script src="../dist/masonry.standalone.js"></script>
   </head>
   <style type="text/css">
@@ -57,13 +84,7 @@
     <script>
       var m = new masonry('masonry');
 
-      function throttle(method, scope) {
-        clearTimeout(method._tId);
-        method._tId= setTimeout(function(){
-            method.call(scope);
-        }, 100);
-      }
-      window.onresize = _.throttle(function (argument) {
+      window.onresize = debounce(function() {
         m.reLayout();
       }, 200);
     </script>

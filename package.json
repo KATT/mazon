@@ -23,8 +23,7 @@
     "grunt-mocha-test": "~0.7.0",
     "mocha": "~1.14.0",
     "sinon": "~1.7.3",
-    "sinon-chai": "~2.4.0",
-    "lodash": "~2.4.1"
+    "sinon-chai": "~2.4.0"
   },
   "browser": {
     "minimatch": "./browser/lib/shim/minimatch.js",

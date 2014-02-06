@@ -76,8 +76,6 @@ MasonryLayout.prototype._addNewRow = function() {
  */
 MasonryLayout.prototype._checkIfPointFitsRect = function(position, width, height) {
   var dx, i, x, y, j, col, row, matrix;
-  console.log('_checkIfPointFitsRect', position, width, height);
-
 
 
   matrix = this._matrix;
@@ -204,31 +202,40 @@ function Masonry(elementID, opts) {
 
 
 Masonry.prototype.filterItems = function() {
-  // TODO filterItems
+  // TODO
+  // loop through this.items
+  // toggle "hidden" classes to items
+  // add vissible `this.filteredItems`
+
+  // (temp) copy filtered items
+  this.filteredItems = this.items.slice(0);
 };
 
 
 Masonry.prototype.sortItems = function() {
-  // TODO sortItems
+
+  // TODO
+  // Change the order of `this.element.children`s' in the DOM
+  // only care about position of `this.filteredItems`
+
 };
 
-Masonry.prototype.positionItemToPoint = function($item, point) {
-  var x = point.x * this.options.columnWidth + 'px';
-  var y = point.y * this.rowHeight + 'px';
 
-  console.log($item, x, y, point);
+Masonry.prototype.setItemPosition = function($item, x, y) {
+  x += 'px';
+  y += 'px';
 
   var isFirstTime = ($item.style.position !== 'absolute'); // TODO better check
-
-
   if (isFirstTime) {
     $item.style.position = 'absolute'
 
     // make sure we don't animate in on render
+    // TODO should probably be re-written once we get into adding
     $item.style.display = 'none';
     $item.offsetHeight;
     $item.style.display = 'block';
   }
+
   // TODO below, check for translate3d support + vendor prefix
   if (true) {
     $item.style.webkitTransform = 'translate3d('+x+','+y+',0)';
@@ -236,6 +243,14 @@ Masonry.prototype.positionItemToPoint = function($item, point) {
     $item.style.left = x;
     $item.style.top = y;
   }
+};
+
+Masonry.prototype.positionItemToPoint = function($item, point) {
+  var x = point.x * this.options.columnWidth;
+  var y = point.y * this.rowHeight;
+
+
+  this.setItemPosition($item, x, y);
 };
 
 Masonry.prototype.calculateRowHeight = function() {
@@ -255,7 +270,7 @@ Masonry.prototype.calculateRowHeight = function() {
 };
 
 Masonry.prototype.reLayout = function() {
-  this.items = this.element.children;
+  this.items = [].slice.call(this.element.children);
 
   this.filterItems();
   this.sortItems();
