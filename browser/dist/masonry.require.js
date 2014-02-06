@@ -176,7 +176,7 @@ var MasonryLayout = require('./lib/layout');
 
 var defaultOptions = {
   columnWidth: 100,
-  gutter: 20,
+  gutterSize: 10,
 };
 
 function extend(o1, o2) {
@@ -249,6 +249,9 @@ Masonry.prototype.positionItemToPoint = function($item, point) {
   var x = point.x * this.options.columnWidth;
   var y = point.y * this.rowHeight;
 
+  x += (this.options.gutterSize * point.x);
+  y += (this.options.gutterSize * point.y);
+
 
   this.setItemPosition($item, x, y);
 };
@@ -268,6 +271,14 @@ Masonry.prototype.calculateRowHeight = function() {
 
   this.rowHeight  = rowHeight;
 };
+Masonry.prototype.calculateNumberOfColumns = function() {
+  var nCols = (this.element.offsetWidth / this.options.columnWidth);
+  var nColsMinusGutters = (this.element.offsetWidth + this.options.gutterSize) / (this.options.columnWidth + this.options.gutterSize);
+  console.log('w/o gutters', nCols);
+  console.log('w gutters', nColsMinusGutters);
+
+  this.numberOfColumns = Math.floor(nColsMinusGutters);
+};
 
 Masonry.prototype.reLayout = function() {
   this.items = [].slice.call(this.element.children);
@@ -276,16 +287,21 @@ Masonry.prototype.reLayout = function() {
   this.sortItems();
 
   this.calculateRowHeight();
+  this.calculateNumberOfColumns();
 
-  var nCols = Math.floor(this.element.offsetWidth / this.options.columnWidth);
-  var layout = new MasonryLayout(nCols);
+  var layout = new MasonryLayout(this.numberOfColumns);
 
   var len = this.items.length;
   for (var i = 0; i < len; i++) {
     var $item = this.items[i];
 
-    var itemColSpan = Math.ceil($item.offsetWidth / this.options.columnWidth);
-    var itemRowSpan = Math.ceil($item.offsetHeight / this.rowHeight);
+    var itemColSpan = $item.offsetWidth / this.options.columnWidth;
+    itemColSpan -= (this.options.gutterSize/this.options.columnWidth) * Math.floor(itemColSpan - 1);
+    itemColSpan = Math.ceil(itemColSpan);
+
+    var itemRowSpan = $item.offsetHeight / this.rowHeight;
+    itemRowSpan -= (this.options.gutterSize/this.rowHeight) * Math.floor(itemRowSpan - 1);
+    itemRowSpan = Math.ceil(itemRowSpan);
 
 
     var position = layout.addRect(itemColSpan, itemRowSpan);
