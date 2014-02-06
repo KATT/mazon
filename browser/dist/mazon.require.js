@@ -181,6 +181,7 @@ var MasonryLayout = require('./lib/layout');
 
 var defaultOptions = {
   columnWidth: 100,
+  rowHeight: 100,
   gutterSize: 10,
 };
 
@@ -252,7 +253,7 @@ Masonry.prototype.setItemPosition = function($item, x, y) {
 
 Masonry.prototype.positionItemToPoint = function($item, point) {
   var x = point.x * this.options.columnWidth;
-  var y = point.y * this.rowHeight;
+  var y = point.y * this.options.rowHeight;
 
   x += (this.options.gutterSize * point.x);
   y += (this.options.gutterSize * point.y);
@@ -261,42 +262,41 @@ Masonry.prototype.positionItemToPoint = function($item, point) {
   this.setItemPosition($item, x, y);
 };
 
+Masonry.prototype.getItemLayoutSpan = function($item) {
+  // TODO
+  // move gutter math into MasonryLayout component/subclass?
+  // make MasonryLayoutSpan for this object?
+
+  // how many col/rows does this item occupy
+  var itemColSpan = $item.offsetWidth  / this.options.columnWidth;
+  var itemRowSpan = $item.offsetHeight / this.options.rowHeight;
+
+  // don't include the gutter in the calculation
+  itemColSpan -= (this.options.gutterSize/this.options.columnWidth) * Math.floor(itemColSpan - 1);
+  itemRowSpan -= (this.options.gutterSize/this.options.rowHeight) * Math.floor(itemRowSpan - 1);
+
+  // round up
+  itemColSpan = Math.ceil(itemColSpan);
+  itemRowSpan = Math.ceil(itemRowSpan);
+
+  return {
+    width: itemColSpan,
+    height: itemRowSpan
+  }
+};
+
 Masonry.prototype.positionItems = function() {
   var len = this.items.length;
   for (var i = 0; i < len; i++) {
-    var $item = this.items[i];
+    var $item = this.filteredItems[i];
 
-    // TODO move gutter math into MasonryLayout component/subclass?
-    var itemColSpan = $item.offsetWidth / this.options.columnWidth;
-    itemColSpan -= (this.options.gutterSize/this.options.columnWidth) * Math.floor(itemColSpan - 1);
-    itemColSpan = Math.ceil(itemColSpan);
-
-    var itemRowSpan = $item.offsetHeight / this.rowHeight;
-    itemRowSpan -= (this.options.gutterSize/this.rowHeight) * Math.floor(itemRowSpan - 1);
-    itemRowSpan = Math.ceil(itemRowSpan);
-
-
-    var position = this.layout.addRect(itemColSpan, itemRowSpan);
+    var span = this.getItemLayoutSpan($item);
+    var position = this.layout.addRect(span.width, span.height);
 
     this.positionItemToPoint($item, position);
   }
 };
 
-Masonry.prototype.calculateRowHeight = function() {
-  var len = this.items.length;
-  var rowHeight = 200; // FIXME
-
-  for (var i = 0; i < len; i++) {
-    var $item = this.items[i];
-    var $itemHeight = $item.offsetHeight
-    if (!$itemHeight) {
-      continue;
-    }
-    rowHeight = Math.min(rowHeight, $item.offsetHeight)
-  }
-
-  this.rowHeight  = rowHeight;
-};
 Masonry.prototype.calculateNumberOfColumns = function() {
   // var nCols = (this.viewport.offsetWidth / this.options.columnWidth);
   var nColsMinusGutters = (this.viewport.offsetWidth + this.options.gutterSize) / (this.options.columnWidth + this.options.gutterSize);
@@ -311,7 +311,7 @@ Masonry.prototype.resizeViewPort = function() {
 
   // auto-adjusts on width
   // var width = (this.numberOfColumns * this.options.columnWidth) + (this.numberOfColumns-1) * this.options.gutterSize;
-  var height = (numberOfRows * this.rowHeight) + (numberOfRows-1) * this.options.gutterSize;
+  var height = (numberOfRows * this.options.rowHeight) + (numberOfRows-1) * this.options.gutterSize;
 
   this.viewport.style.height = height + 'px';
 };
