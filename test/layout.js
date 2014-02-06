@@ -6,7 +6,7 @@ var sinonChai = require('sinon-chai')
 chai.use(sinonChai)
 
 
-var Masonry = require('../masonry');
+var Masonry = require('../mazon');
 var MasonryLayout = require('../lib/layout');
 var MasonryLayoutPoint = require('../lib/layout-point');
 
@@ -46,7 +46,6 @@ describe('MasonryLayout', function() {
     layout.addRect(1, 1);
     expect(layout.getPositionForRect(1, 1)).to.deep.equal({x:1, y:1});
   });
-
 
   it('should add 2 wide blocks', function() {
     layout.addRect(2, 1);

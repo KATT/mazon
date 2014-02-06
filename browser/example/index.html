@@ -30,14 +30,14 @@
       }
 
     </script>
-    <script src="../dist/masonry.standalone.js"></script>
+    <script src="../dist/mazon.standalone.js"></script>
   </head>
   <style type="text/css">
     * { box-sizing: border-box; }
 
     body {
     }
-    #masonry {
+    #mazon {
       background: #efefef;
       position: relative;
       margin: 20px;
@@ -66,7 +66,7 @@
     }
   </style>
   <body>
-    <section id="masonry">
+    <section id="mazon">
       <article>1</article>
       <article class="two-width">2</article>
       <article>3</article>
@@ -91,7 +91,7 @@
     </section>
 
     <script>
-      var m = new masonry('masonry');
+      var m = new mazon('mazon');
 
       window.onresize = debounce(function() {
         m.reLayout();

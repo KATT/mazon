@@ -1,11 +1,11 @@
 {
-  "name": "masonry",
+  "name": "mazon",
   "version": "0.0.0",
   "description": "",
   "scripts": {
     "test": "grunt"
   },
-  "main": "./masonry",
+  "main": "./mazon",
   "dependencies": {
     "minimatch": "~0.2.12"
   },

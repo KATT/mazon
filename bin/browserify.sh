@@ -13,21 +13,21 @@ pushd $bin_path/.. > /dev/null
 # This browserify build be used by users of the module. It contains a
 # UMD (universal module definition) and can be used via an AMD module
 # loader like RequireJS or by simply placing a script tag in the page,
-# which registers masonry as a global var. You can see examples for both
+# which registers mazon as a global var. You can see examples for both
 # usages in browser/example/index.html (script tag) and
 # browser/example/index-require.html (RequireJS).
 browserify \
-  --entry masonry.js \
-  --outfile browser/dist/masonry.standalone.js \
-  --standalone masonry
+  --entry mazon.js \
+  --outfile browser/dist/mazon.standalone.js \
+  --standalone mazon
 
 # This browserify build can be required by other browserify modules that
 # have been created with an --external parameter. See
 # browser/test/index.html for an example.
 browserify \
-  --entry masonry.js \
-  --outfile browser/dist/masonry.require.js \
-  --require ./masonry
+  --entry mazon.js \
+  --outfile browser/dist/mazon.require.js \
+  --require ./mazon
 
 # These are the browserified tests. We need to browserify the tests to be
 # able to run the mocha tests while writing the tests as clean, simple
@@ -37,6 +37,6 @@ browserify \
 browserify \
   --entry browser/test/suite.js \
   --outfile browser/test/browserified_tests.js \
-  --external ./masonry.js
+  --external ./mazon.js
 
 popd > /dev/null
