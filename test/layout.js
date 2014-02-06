@@ -93,6 +93,19 @@ describe('MasonryLayout', function() {
     ]);
   });
 
+  it('should return correct number of rows', function() {
+    expect(layout.getNumberOfRows()).to.equal(0);
+    expect(layout.addRect(1, 1));
+    expect(layout.getNumberOfRows()).to.equal(1);
+    expect(layout.addRect(3, 1)); // fill the row
+    expect(layout.getNumberOfRows()).to.equal(1);
+    expect(layout.addRect(4, 1));
+    expect(layout.getNumberOfRows()).to.equal(2);
+
+    expect(layout.addRect(4, 4));
+    expect(layout.getNumberOfRows()).to.equal(6);
+  });
+
 
   // it('should throw error when trying to add too wide pieces', function() {
   //   expect(layout.addRect(5, 1)).to.throw(new Error);
