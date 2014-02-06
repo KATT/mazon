@@ -298,12 +298,14 @@ Masonry.prototype.positionItems = function() {
 };
 
 Masonry.prototype.calculateNumberOfColumns = function() {
-  // var nCols = (this.viewport.offsetWidth / this.options.columnWidth);
-  var nColsMinusGutters = (this.viewport.offsetWidth + this.options.gutterSize) / (this.options.columnWidth + this.options.gutterSize);
-  // console.log('w/o gutters', nCols);
-  // console.log('w gutters', nColsMinusGutters);
 
-  this.numberOfColumns = Math.floor(nColsMinusGutters);
+  var viewPortExtraGutter = (this.viewport.offsetWidth + this.options.gutterSize);
+  var columnWidthWithGutter = (this.options.columnWidth + this.options.gutterSize);
+
+  var nCols = viewPortExtraGutter / columnWidthWithGutter;
+
+
+  this.numberOfColumns = Math.floor(nCols);
 };
 
 Masonry.prototype.resizeViewPort = function() {
@@ -322,7 +324,6 @@ Masonry.prototype.reLayout = function() {
   this.filterItems();
   this.sortItems();
 
-  this.calculateRowHeight();
   this.calculateNumberOfColumns();
 
   this.layout = new MasonryLayout(this.numberOfColumns);
