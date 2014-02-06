@@ -261,6 +261,27 @@ Masonry.prototype.positionItemToPoint = function($item, point) {
   this.setItemPosition($item, x, y);
 };
 
+Masonry.prototype.positionItems = function() {
+  var len = this.items.length;
+  for (var i = 0; i < len; i++) {
+    var $item = this.items[i];
+
+    // TODO move gutter math into MasonryLayout component/subclass?
+    var itemColSpan = $item.offsetWidth / this.options.columnWidth;
+    itemColSpan -= (this.options.gutterSize/this.options.columnWidth) * Math.floor(itemColSpan - 1);
+    itemColSpan = Math.ceil(itemColSpan);
+
+    var itemRowSpan = $item.offsetHeight / this.rowHeight;
+    itemRowSpan -= (this.options.gutterSize/this.rowHeight) * Math.floor(itemRowSpan - 1);
+    itemRowSpan = Math.ceil(itemRowSpan);
+
+
+    var position = this.layout.addRect(itemColSpan, itemRowSpan);
+
+    this.positionItemToPoint($item, position);
+  }
+};
+
 Masonry.prototype.calculateRowHeight = function() {
   var len = this.items.length;
   var rowHeight = 200; // FIXME
@@ -306,24 +327,7 @@ Masonry.prototype.reLayout = function() {
 
   this.layout = new MasonryLayout(this.numberOfColumns);
 
-  var len = this.items.length;
-  for (var i = 0; i < len; i++) {
-    var $item = this.items[i];
-
-    var itemColSpan = $item.offsetWidth / this.options.columnWidth;
-    itemColSpan -= (this.options.gutterSize/this.options.columnWidth) * Math.floor(itemColSpan - 1);
-    itemColSpan = Math.ceil(itemColSpan);
-
-    var itemRowSpan = $item.offsetHeight / this.rowHeight;
-    itemRowSpan -= (this.options.gutterSize/this.rowHeight) * Math.floor(itemRowSpan - 1);
-    itemRowSpan = Math.ceil(itemRowSpan);
-
-
-    var position = this.layout.addRect(itemColSpan, itemRowSpan);
-
-    this.positionItemToPoint($item, position);
-
-  }
+  this.positionItems();
 
   this.resizeViewPort();
 };
