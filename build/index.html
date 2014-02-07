@@ -29,8 +29,9 @@
         };
       }
 
+
     </script>
-    <script src="../dist/mazon.standalone.js"></script>
+    <script src="mazon.js"></script>
   </head>
   <style type="text/css">
     * { box-sizing: border-box; }
@@ -91,11 +92,12 @@
     </section>
 
     <script>
-      var m = new mazon('mazon');
+      var m = new Mazon('mazon');
 
       window.onresize = debounce(function() {
         m.reLayout();
       }, 200);
     </script>
+    <script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35721/livereload.js?snipver=1"></' + 'script>')</script>
   </body>
 </html>

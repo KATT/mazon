@@ -60,12 +60,12 @@ Masonry.prototype.setItemPosition = function($item, x, y) {
 
   var isFirstTime = ($item.style.position !== 'absolute'); // TODO better check
   if (isFirstTime) {
-    $item.style.position = 'absolute'
+    $item.style.position = 'absolute';
 
     // make sure we don't animate in on render
     // TODO should probably be re-written once we get into adding
     $item.style.display = 'none';
-    $item.offsetHeight;
+    var repaint = $item.offsetHeight;
     $item.style.display = 'block';
   }
 
@@ -109,7 +109,7 @@ Masonry.prototype.getItemLayoutSpan = function($item) {
   return {
     width: itemColSpan,
     height: itemRowSpan
-  }
+  };
 };
 
 Masonry.prototype.positionItems = function() {

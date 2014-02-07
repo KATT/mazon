@@ -1,15 +1,4 @@
 'use strict';
-var chai = require('chai')
-var expect = chai.expect
-var sinon = require('sinon')
-var sinonChai = require('sinon-chai')
-chai.use(sinonChai)
-
-
-var Masonry = require('../mazon');
-var MasonryLayout = require('../lib/layout');
-var MasonryLayoutPoint = require('../lib/layout-point');
-
 
 
 describe('MasonryLayoutPoint', function() {
