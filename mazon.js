@@ -25,6 +25,10 @@ function extend(o1, o2) {
   return o1;
 }
 
+function repaint(element) {
+  var repaint = element.offsetHeight;
+}
+
 
 
 var prefix = 'webkit';
@@ -78,8 +82,6 @@ function Masonry(elementID, opts) {
   this._hiddenItems = [];
 
   this._setup();
-
-  this.reLayout();
 }
 
 
@@ -123,7 +125,7 @@ Masonry.prototype._sortItems = function() {
     for (var i = 0; i < len; i++) {
       var $item = this._filteredItems[i];
 
-      this._viewport.appendChild($item);
+      // this._viewport.appendChild($item);
     }
 
   }
@@ -225,17 +227,42 @@ Masonry.prototype._resetItemTransforms = function() {
   }
 };
 
-Masonry.prototype._prepareItem = function($item) {
+Masonry.prototype._setHiddenStyle = function($item) {
+  var scale = this._options.hiddenStyle.scale || 1;
+  toggleClassName($item, this._options.hiddenClassName, true);
+
+  var transformStr = '';
+  // transformStr += 'translate3d('+x+','+y+',0) ';
+  transformStr += 'scale3d('+scale+', '+scale+', 1)';
+
+  $item.style[prefix + 'Transform'] = transformStr;
+};
+
+Masonry.prototype._setupItem = function($item) {
   // TODO better check
   var isFirstTime = ($item.style.position !== 'absolute');
   if (isFirstTime) {
+    // make sure we don't animate in on render
+    $item.style.display = 'none';
+    repaint($item);
+    // this._setHiddenStyle($item);
+
     $item.style.position = 'absolute';
 
-    // make sure we don't animate in on render
     // TODO should probably be re-written once we get into adding
-    $item.style.display = 'none';
-    var repaint = $item.offsetHeight;
+
+    var x = $item._styles.x;
+    var y = $item._styles.y;
+    var scale = this._options.hiddenStyle.scale || 1;
+
+    var transformStr = '';
+    transformStr += 'translate3d('+x+','+y+',0) ';
+    transformStr += 'scale3d('+scale+', '+scale+', 1)';
+
+    $item.style[prefix + 'Transform'] = transformStr;
+
     $item.style.display = 'block';
+    repaint($item.offsetHeight);
   }
 };
 
@@ -243,11 +270,17 @@ Masonry.prototype._performItemTransforms = function() {
   var len = this._items.length;
   for (var i = 0; i < len; i++) {
     var $item = this._items[i];
-    this._prepareItem($item);
+
+    // TODO
+    // if item was hidden, "teleport" (no transition) it to correct x,y
+    // then scale 0 -> 1
 
     var x = $item._styles.x;
     var y = $item._styles.y;
     var scale = $item._styles.scale || 1;
+
+
+    this._setupItem($item);
 
     if (translate3d) {
       var transformStr = '';
@@ -265,9 +298,18 @@ Masonry.prototype._performItemTransforms = function() {
 Masonry.prototype._setup = function() {
   var self = this;
   // TODO not cross-browser
-  this._viewport.addEventListener(transitionEnd, function() {
+  self._viewport.addEventListener(transitionEnd, function() {
     self._onTransitionEnd();
   });
+
+  toggleClassName(self._viewport, 'no-transition', true);
+
+  repaint(self._viewport);
+  self.reLayout();
+
+  repaint(self._viewport);
+  toggleClassName(self._viewport, 'no-transition', false);
+
 };
 
 Masonry.prototype._onTransitionEnd = function () {
@@ -298,6 +340,18 @@ Masonry.prototype.reLayout = function() {
   // some kind of trigger when reLayout is done?
   // could be used to clean up un-used items from the DOM tree etc
   //
+  return this;
+};
+
+
+Masonry.prototype.addItem = function($item) {
+  // prepend so it has the lowest z-index
+  if (this._viewport.firstChild) {
+    this._viewport.insertBefore($item, this._viewport.firstChild);
+  } else {
+    this._viewport.appendChild($item);
+  }
+
   return this;
 };
 
