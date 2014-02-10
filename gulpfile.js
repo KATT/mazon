@@ -62,7 +62,7 @@ gulp.task('lr-server-refresh', function() {
 
 // Rerun the task when a file changes
 gulp.task('watch', function () {
-  gulp.watch(['lib/**/*.js'], ['scripts', test]);
+  gulp.watch(['mazon.js', 'lib/**/*.js'], ['scripts', test]);
   gulp.watch(['test/**/*.js'], ['scripts', test]);
 
   gulp.watch(['build/**/*'], ['lr-server-refresh']);

@@ -17,24 +17,24 @@ function extend(o1, o2) {
 }
 
 function Masonry(elementID, opts) {
-  this.viewportID = elementID;
-	this.viewport = document.getElementById(elementID);
+  this._viewportID = elementID;
+  this._viewport = document.getElementById(elementID);
 
-  this.options = {};
-  this.options = extend(this.options, defaultOptions);
-  this.options = extend(this.options, opts);
+  this._options = {};
+  this._options = extend(this._options, defaultOptions);
+  this._options = extend(this._options, opts);
 
   this.reLayout();
 }
 
 
 
-Masonry.prototype.filterItems = function() {
+Masonry.prototype._filterItems = function() {
   this.filteredItems = [];
 
-  var len = this.items.length;
+  var len = this._items.length;
   for (var i = 0; i < len; i++) {
-    var $item = this.items[i];
+    var $item = this._items[i];
     // TODO
     // toggle "hidden" classes to $item
     // add vissible `this.filteredItems`
@@ -45,16 +45,16 @@ Masonry.prototype.filterItems = function() {
 };
 
 
-Masonry.prototype.sortItems = function() {
+Masonry.prototype._sortItems = function() {
 
   // TODO
-  // Change the order of `this.viewport.children`s in the DOM
+  // Change the order of `this._viewport.children`s in the DOM
   // only care about position of `this.filteredItems`
 
 };
 
 
-Masonry.prototype.setItemPosition = function($item, x, y) {
+Masonry.prototype._setItemPosition = function($item, x, y) {
   x += 'px';
   y += 'px';
 
@@ -78,29 +78,29 @@ Masonry.prototype.setItemPosition = function($item, x, y) {
   }
 };
 
-Masonry.prototype.positionItemToPoint = function($item, point) {
-  var x = point.x * this.options.columnWidth;
-  var y = point.y * this.options.rowHeight;
+Masonry.prototype._positionItemToPoint = function($item, point) {
+  var x = point.x * this._options.columnWidth;
+  var y = point.y * this._options.rowHeight;
 
-  x += (this.options.gutterSize * point.x);
-  y += (this.options.gutterSize * point.y);
+  x += (this._options.gutterSize * point.x);
+  y += (this._options.gutterSize * point.y);
 
 
-  this.setItemPosition($item, x, y);
+  this._setItemPosition($item, x, y);
 };
 
-Masonry.prototype.getItemLayoutSpan = function($item) {
+Masonry.prototype._getItemLayoutSpan = function($item) {
   // TODO
   // move gutter math into MasonryLayout component/subclass?
   // make MasonryLayoutSpan for this object?
 
   // how many col/rows does this item occupy
-  var itemColSpan = $item.offsetWidth  / this.options.columnWidth;
-  var itemRowSpan = $item.offsetHeight / this.options.rowHeight;
+  var itemColSpan = $item.offsetWidth  / this._options.columnWidth;
+  var itemRowSpan = $item.offsetHeight / this._options.rowHeight;
 
   // don't include the gutter in the calculation
-  itemColSpan -= (this.options.gutterSize/this.options.columnWidth) * Math.floor(itemColSpan - 1);
-  itemRowSpan -= (this.options.gutterSize/this.options.rowHeight) * Math.floor(itemRowSpan - 1);
+  itemColSpan -= (this._options.gutterSize/this._options.columnWidth) * Math.floor(itemColSpan - 1);
+  itemRowSpan -= (this._options.gutterSize/this._options.rowHeight) * Math.floor(itemRowSpan - 1);
 
   // round up
   itemColSpan = Math.ceil(itemColSpan);
@@ -112,56 +112,62 @@ Masonry.prototype.getItemLayoutSpan = function($item) {
   };
 };
 
-Masonry.prototype.positionItems = function() {
-  var len = this.items.length;
+Masonry.prototype._positionItems = function() {
+  var len = this._items.length;
   for (var i = 0; i < len; i++) {
     var $item = this.filteredItems[i];
 
-    var span = this.getItemLayoutSpan($item);
+    var span = this._getItemLayoutSpan($item);
     var position = this.layout.addRect(span.width, span.height);
 
-    this.positionItemToPoint($item, position);
+    this._positionItemToPoint($item, position);
   }
 };
 
-Masonry.prototype.calculateNumberOfColumns = function() {
+Masonry.prototype._calculateNumberOfColumns = function() {
 
-  var viewPortExtraGutter = (this.viewport.offsetWidth + this.options.gutterSize);
-  var columnWidthWithGutter = (this.options.columnWidth + this.options.gutterSize);
+  var viewPortExtraGutter = (this._viewport.offsetWidth + this._options.gutterSize);
+  var columnWidthWithGutter = (this._options.columnWidth + this._options.gutterSize);
 
   var nCols = viewPortExtraGutter / columnWidthWithGutter;
 
 
-  this.numberOfColumns = Math.floor(nCols);
+  this._numberOfColumns = Math.floor(nCols);
 };
 
-Masonry.prototype.resizeViewPort = function() {
+Masonry.prototype._resizeViewPort = function() {
   var numberOfRows = this.layout.getNumberOfRows();
 
   // auto-adjusts on width
-  // var width = (this.numberOfColumns * this.options.columnWidth) + (this.numberOfColumns-1) * this.options.gutterSize;
-  var height = (numberOfRows * this.options.rowHeight) + (numberOfRows-1) * this.options.gutterSize;
+  // var width = (this._numberOfColumns * this._options.columnWidth) + (this._numberOfColumns-1) * this._options.gutterSize;
+  var height = (numberOfRows * this._options.rowHeight) + (numberOfRows-1) * this._options.gutterSize;
 
-  this.viewport.style.height = height + 'px';
+  this._viewport.style.height = height + 'px';
 };
 
+/**
+ * @public
+ * @return Masonry
+ */
 Masonry.prototype.reLayout = function() {
-  this.items = [].slice.call(this.viewport.children);
+  this._items = [].slice.call(this._viewport.children);
 
-  this.filterItems();
-  this.sortItems();
+  this._filterItems();
+  this._sortItems();
 
-  this.calculateNumberOfColumns();
+  this._calculateNumberOfColumns();
 
-  this.layout = new MasonryLayout(this.numberOfColumns);
+  this.layout = new MasonryLayout(this._numberOfColumns);
 
-  this.positionItems();
+  this._positionItems();
 
-  this.resizeViewPort();
+  this._resizeViewPort();
 
   // TODO
   // some kind of trigger when reLayout is done?
   // could be used to clean up un-used items from the DOM tree etc
+  //
+  return this;
 };
 
 module.exports = Masonry;
