@@ -60,6 +60,7 @@
     <nav>
       <ul>
         <li><a href="#" id="toggle-even">Toggle even cols</a></li>
+        <li><a href="#" id="sort-randomly">Sort randomly</a></li>
       </ul>
     </nav>
     <section id="mazon">
@@ -88,6 +89,7 @@
     <script>
 
       var showEvenNumbers = true;
+      var sortRandomly = false;
       var filterCallback = function($item) {
         if (!showEvenNumbers) {
           var number = parseInt($item.innerText);
@@ -96,12 +98,24 @@
         }
         return true;
       };
+      var sortCallback = function($itemA, $itemB) {
+        if (!sortRandomly) {
+          var a = parseInt($itemA.innerText);
+          var b = parseInt($itemB.innerText);
+          if (a === b) {
+            return 0;
+          }
+          return (a > b ? 1 : -1);
+        }
+        return (0.5 - Math.random());
+      };
 
       var m = new Mazon('mazon', {
         columnWidth: 100,
         rowHeight: 100,
         gutterSize: 10,
-        filterCallback: filterCallback
+        filterCallback: filterCallback,
+        sortCallback: sortCallback
       });
 
       window.onresize = debounce(function() {
@@ -114,6 +128,13 @@
           showEvenNumbers = !showEvenNumbers;
           m.reLayout();
         };
+        document.getElementById('sort-randomly').onclick = function(e) {
+          e.preventDefault();
+
+          sortRandomly = !sortRandomly;
+
+          m.reLayout();
+        }
       };
     </script>
     <script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35721/livereload.js?snipver=1"></' + 'script>')</script>

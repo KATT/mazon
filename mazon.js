@@ -108,47 +108,20 @@ Masonry.prototype._filterItems = function() {
 
 
 Masonry.prototype._sortItems = function() {
+  var sortCallback = this._options.sortCallback;
+  if (sortCallback) {
+    this._filteredItems.sort(sortCallback);
 
-  // TODO
-  // Change the order of `this._viewport.children`s in the DOM
-  // only care about position of `this._filteredItems`
+    var len = this._filteredItems.length;
+    for (var i = 0; i < len; i++) {
+      var $item = this._filteredItems[i];
 
-};
+      this._viewport.appendChild($item);
+    }
 
-
-Masonry.prototype._setItemPosition = function($item, x, y) {
-  x += 'px';
-  y += 'px';
-
-  var isFirstTime = ($item.style.position !== 'absolute'); // TODO better check
-  if (isFirstTime) {
-    $item.style.position = 'absolute';
-
-    // make sure we don't animate in on render
-    // TODO should probably be re-written once we get into adding
-    $item.style.display = 'none';
-    var repaint = $item.offsetHeight;
-    $item.style.display = 'block';
-  }
-
-  // TODO below, check for translate3d support + vendor prefix
-  if (translate3d) {
-
-    // FIXME
-    // create a list of style transforms in beginning of reLayout and apply after
-    // this is not nice
-    var scale = hasClassName($item, this._options.hiddenClassName) ? 0.01 : 1;
-    var transformStr = '';
-    transformStr += 'translate3d('+x+','+y+',0)';
-    transformStr += ' scale3d('+scale+', '+scale+', 1)';
-
-    $item.style[prefix + 'Transform'] = transformStr;
-
-  } else {
-    $item.style.left = x;
-    $item.style.top = y;
   }
 };
+
 
 Masonry.prototype._positionItemToPoint = function($item, point) {
   var x = point.x * this._options.columnWidth;
@@ -245,7 +218,6 @@ Masonry.prototype._prepareItem = function($item) {
 };
 
 Masonry.prototype._performItemTransforms = function() {
-  console.log('_performItemTransforms');
   var len = this._items.length;
   for (var i = 0; i < len; i++) {
     var $item = this._items[i];
@@ -260,7 +232,6 @@ Masonry.prototype._performItemTransforms = function() {
       transformStr += 'translate3d('+x+','+y+',0) ';
       transformStr += 'scale3d('+scale+', '+scale+', 1)';
 
-      console.log(transformStr);
       $item.style[prefix + 'Transform'] = transformStr;
 
     } else {
