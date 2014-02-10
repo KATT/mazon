@@ -44,6 +44,10 @@ npm install
 gulp
 ```
 
+## Demo
+
+See `build/index.html`
+
 ## Configuration
 
  -
