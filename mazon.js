@@ -5,6 +5,9 @@ var defaultOptions = {
   columnWidth: 100,
   rowHeight: 100,
   gutterSize: 10,
+  filterCallback: null,
+  sortCallback: null,
+  hiddenClassName: 'hidden'
 };
 
 function extend(o1, o2) {
@@ -16,6 +19,42 @@ function extend(o1, o2) {
   return o1;
 }
 
+
+// @link http://davidwalsh.name/vendor-prefix
+var prefix = 'webkit';
+
+var translate3d = true; // FIXME check for support
+
+
+var hasClassName = function toggleClassName(element, className) {
+  var hasClassNameRegEx = new RegExp('(?:^|\\s)' + className + '(?!\\S)', 'g');
+
+  return hasClassNameRegEx.test(element.className);
+};
+
+
+var toggleClassName = function toggleClassName(element, className, show) {
+  var hasClassNameRegEx = new RegExp('(?:^|\\s)' + className + '(?!\\S)', 'g');
+  var classList = element.className;
+
+  var newClassList = classList;
+  if (show) {
+    if (hasClassName(element, className)) {
+      return;
+    }
+    newClassList += ' ' + className;
+  } else {
+    newClassList = classList.replace(hasClassNameRegEx, ' ');
+  }
+  // remove double spaces
+  newClassList = newClassList.replace(/\s+/g, ' ');
+
+  // trim whitespace
+  newClassList = newClassList.replace(/(^\s+|\s+$)/g, '');
+
+  element.className = newClassList;
+};
+
 function Masonry(elementID, opts) {
   this._viewportID = elementID;
   this._viewport = document.getElementById(elementID);
@@ -24,23 +63,39 @@ function Masonry(elementID, opts) {
   this._options = extend(this._options, defaultOptions);
   this._options = extend(this._options, opts);
 
+  this._filteredItems = [];
+  this._hiddenItems = [];
+
   this.reLayout();
 }
 
 
 
 Masonry.prototype._filterItems = function() {
-  this.filteredItems = [];
+  this._filteredItems = [];
+  this._hiddenItems = [];
 
   var len = this._items.length;
   for (var i = 0; i < len; i++) {
     var $item = this._items[i];
+
+    var show = true;
+
     // TODO
     // toggle "hidden" classes to $item
-    // add vissible `this.filteredItems`
-    if (true) {
-      this.filteredItems.push($item);
+    // add visible `this._filteredItems`
+
+    if (this._options.filterCallback) {
+      show = this._options.filterCallback($item);
     }
+
+    if (show) {
+      this._filteredItems.push($item);
+    } else {
+      this._hiddenItems.push($item);
+    }
+
+    toggleClassName($item, this._options.hiddenClassName, !show);
   }
 };
 
@@ -49,7 +104,7 @@ Masonry.prototype._sortItems = function() {
 
   // TODO
   // Change the order of `this._viewport.children`s in the DOM
-  // only care about position of `this.filteredItems`
+  // only care about position of `this._filteredItems`
 
 };
 
@@ -70,8 +125,18 @@ Masonry.prototype._setItemPosition = function($item, x, y) {
   }
 
   // TODO below, check for translate3d support + vendor prefix
-  if (true) {
-    $item.style.webkitTransform = 'translate3d('+x+','+y+',0)';
+  if (translate3d) {
+
+    // FIXME
+    // create a list of style transforms in beginning of reLayout and apply after
+    // this is not nice
+    var scale = hasClassName($item, this._options.hiddenClassName) ? 0.01 : 1;
+    var transformStr = '';
+    transformStr += 'translate3d('+x+','+y+',0)';
+    transformStr += ' scale3d('+scale+', '+scale+', 1)';
+
+    $item.style[prefix + 'Transform'] = transformStr;
+
   } else {
     $item.style.left = x;
     $item.style.top = y;
@@ -93,8 +158,8 @@ Masonry.prototype._getItemLayoutSpan = function($item) {
   // TODO
   // move gutter math into MasonryLayout component/subclass?
   // make MasonryLayoutSpan for this object?
-
   // how many col/rows does this item occupy
+  // memoize results?
   var itemColSpan = $item.offsetWidth  / this._options.columnWidth;
   var itemRowSpan = $item.offsetHeight / this._options.rowHeight;
 
@@ -113,9 +178,9 @@ Masonry.prototype._getItemLayoutSpan = function($item) {
 };
 
 Masonry.prototype._positionItems = function() {
-  var len = this._items.length;
+  var len = this._filteredItems.length;
   for (var i = 0; i < len; i++) {
-    var $item = this.filteredItems[i];
+    var $item = this._filteredItems[i];
 
     var span = this._getItemLayoutSpan($item);
     var position = this.layout.addRect(span.width, span.height);

@@ -15,21 +15,6 @@
           }, delay);
         };
       }
-      function throttle(fn, delay) {
-        var timeout;
-        return function() {
-          var args = arguments;
-          var context = this;
-          if (!timeout) {
-            timeout = setTimeout(function() {
-              timeout = 0;
-              return fn.apply(context, args)
-            }, delay);
-          }
-        };
-      }
-
-
     </script>
     <script src="mazon.js"></script>
   </head>
@@ -65,8 +50,17 @@
       height: 210px;
       line-height: 210px;
     }
+
+    article.hidden {
+      pointer-events: none;
+    }
   </style>
   <body>
+    <nav>
+      <ul>
+        <li><a href="#" id="toggle-even">Toggle even cols</a></li>
+      </ul>
+    </nav>
     <section id="mazon">
       <article>1</article>
       <article class="two-width">2</article>
@@ -88,15 +82,38 @@
       <article class="two-width">18</article>
       <article>19</article>
       <article>20</article>
-      <article>21</article>
     </section>
 
     <script>
-      var m = new Mazon('mazon');
+
+      var showEvenNumbers = true;
+      var filterCallback = function($item) {
+        if (!showEvenNumbers) {
+          var number = parseInt($item.innerText);
+          return (number%2 === 0);
+
+        }
+        return true;
+      };
+
+      var m = new Mazon('mazon', {
+        columnWidth: 100,
+        rowHeight: 100,
+        gutterSize: 10,
+        filterCallback: filterCallback
+      });
 
       window.onresize = debounce(function() {
         m.reLayout();
       }, 200);
+      window.onload = function() {
+        document.getElementById('toggle-even').onclick = function(e) {
+          e.preventDefault();
+
+          showEvenNumbers = !showEvenNumbers;
+          m.reLayout();
+        };
+      };
     </script>
     <script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35721/livereload.js?snipver=1"></' + 'script>')</script>
   </body>
