@@ -7,7 +7,13 @@ var defaultOptions = {
   gutterSize: 10,
   filterCallback: null,
   sortCallback: null,
-  hiddenClassName: 'hidden'
+  hiddenClassName: 'hidden',
+  hiddenStyle: {
+    scale: 0.01
+  },
+  visibleStyle: {
+    scale: 1
+  }
 };
 
 function extend(o1, o2) {
@@ -81,10 +87,6 @@ Masonry.prototype._filterItems = function() {
 
     var show = true;
 
-    // TODO
-    // toggle "hidden" classes to $item
-    // add visible `this._filteredItems`
-
     if (this._options.filterCallback) {
       show = this._options.filterCallback($item);
     }
@@ -95,7 +97,12 @@ Masonry.prototype._filterItems = function() {
       this._hiddenItems.push($item);
     }
 
+    // update the CSS & styles
     toggleClassName($item, this._options.hiddenClassName, !show);
+
+    var styles = show ? this._options.visibleStyle : this._options.hiddenStyle;
+    $item._styles = $item._styles || {};
+    $item._styles = extend($item._styles, styles);
   }
 };
 
@@ -150,8 +157,11 @@ Masonry.prototype._positionItemToPoint = function($item, point) {
   x += (this._options.gutterSize * point.x);
   y += (this._options.gutterSize * point.y);
 
-
-  this._setItemPosition($item, x, y);
+  $item._styles = $item._styles || {};
+  $item._styles = extend($item._styles, {
+    x: x + 'px',
+    y: y + 'px'
+  });
 };
 
 Masonry.prototype._getItemLayoutSpan = function($item) {
@@ -210,6 +220,55 @@ Masonry.prototype._resizeViewPort = function() {
   this._viewport.style.height = height + 'px';
 };
 
+Masonry.prototype._resetItemTransforms = function() {
+  var len = this._items.length;
+  for (var i = 0; i < len; i++) {
+    var $item = this._items[i];
+
+    // FIXME don't edit the DOM object, have an internal hashmap instead
+    $item._styles = {};
+  }
+};
+
+Masonry.prototype._prepareItem = function($item) {
+  // TODO better check
+  var isFirstTime = ($item.style.position !== 'absolute');
+  if (isFirstTime) {
+    $item.style.position = 'absolute';
+
+    // make sure we don't animate in on render
+    // TODO should probably be re-written once we get into adding
+    $item.style.display = 'none';
+    var repaint = $item.offsetHeight;
+    $item.style.display = 'block';
+  }
+};
+
+Masonry.prototype._performItemTransforms = function() {
+  console.log('_performItemTransforms');
+  var len = this._items.length;
+  for (var i = 0; i < len; i++) {
+    var $item = this._items[i];
+    this._prepareItem($item);
+
+    var x = $item._styles.x;
+    var y = $item._styles.y;
+    var scale = $item._styles.scale || 1;
+
+    if (translate3d) {
+      var transformStr = '';
+      transformStr += 'translate3d('+x+','+y+',0) ';
+      transformStr += 'scale3d('+scale+', '+scale+', 1)';
+
+      console.log(transformStr);
+      $item.style[prefix + 'Transform'] = transformStr;
+
+    } else {
+      // TODO
+    }
+  }
+};
+
 /**
  * @public
  * @return Masonry
@@ -225,6 +284,8 @@ Masonry.prototype.reLayout = function() {
   this.layout = new MasonryLayout(this._numberOfColumns);
 
   this._positionItems();
+
+  this._performItemTransforms();
 
   this._resizeViewPort();
 
