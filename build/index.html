@@ -59,8 +59,8 @@
   <body>
     <nav>
       <ul>
-        <li><a href="#" id="toggle-even">Toggle even cols</a></li>
-        <li><a href="#" id="sort-randomly">Sort randomly</a></li>
+        <li><a href="#" id="toggle-even">Toggle hiding of even numbers</a></li>
+        <li><a href="#" id="sort-randomly">Toggle sort numbers randomly</a></li>
       </ul>
     </nav>
     <section id="mazon">
@@ -93,7 +93,7 @@
       var filterCallback = function($item) {
         if (!showEvenNumbers) {
           var number = parseInt($item.innerText);
-          return (number%2 === 0);
+          return (number%2 === 1);
 
         }
         return true;

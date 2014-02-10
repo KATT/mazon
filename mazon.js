@@ -39,17 +39,22 @@ var hasClassName = function toggleClassName(element, className) {
 };
 
 
-var toggleClassName = function toggleClassName(element, className, show) {
+var toggleClassName = function toggleClassName(element, className, add) {
   var hasClassNameRegEx = new RegExp('(?:^|\\s)' + className + '(?!\\S)', 'g');
   var classList = element.className;
 
+  var hasClass = hasClassName(element, className);
+
   var newClassList = classList;
-  if (show) {
-    if (hasClassName(element, className)) {
-      return;
-    }
+  if ((add && hasClass) || (!add && !hasClass)) {
+    // no change
+    return;
+  }
+  if (add) {
+    // add className
     newClassList += ' ' + className;
   } else {
+    // remove className
     newClassList = classList.replace(hasClassNameRegEx, ' ');
   }
   // remove double spaces
