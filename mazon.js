@@ -26,9 +26,9 @@ function extend(o1, o2) {
 }
 
 
-// @link http://davidwalsh.name/vendor-prefix
-var prefix = 'webkit';
 
+var prefix = 'webkit';
+var transitionEnd = 'webkitTransitionEnd';
 var translate3d = true; // FIXME check for support
 
 
@@ -76,6 +76,8 @@ function Masonry(elementID, opts) {
 
   this._filteredItems = [];
   this._hiddenItems = [];
+
+  this._setup();
 
   this.reLayout();
 }
@@ -188,12 +190,27 @@ Masonry.prototype._calculateNumberOfColumns = function() {
   this._numberOfColumns = Math.floor(nCols);
 };
 
-Masonry.prototype._resizeViewPort = function() {
+Masonry.prototype._calculateViewPortHeight = function() {
   var numberOfRows = this.layout.getNumberOfRows();
 
   // auto-adjusts on width
   // var width = (this._numberOfColumns * this._options.columnWidth) + (this._numberOfColumns-1) * this._options.gutterSize;
-  var height = (numberOfRows * this._options.rowHeight) + (numberOfRows-1) * this._options.gutterSize;
+  var height = (numberOfRows * this._options.rowHeight) + (numberOfRows/*-1*/) * this._options.gutterSize;
+
+  return height;
+};
+
+Masonry.prototype._expandViewPort = function() {
+  var currentHeight = this._viewport.style.height || 0;
+  currentHeight = parseInt(currentHeight, 10);
+
+  if (currentHeight < this._calculateViewPortHeight()) {
+    this._resizeViewPort();
+  }
+};
+Masonry.prototype._resizeViewPort = function() {
+  var numberOfRows = this.layout.getNumberOfRows();
+  var height = this._calculateViewPortHeight();
 
   this._viewport.style.height = height + 'px';
 };
@@ -245,6 +262,18 @@ Masonry.prototype._performItemTransforms = function() {
   }
 };
 
+Masonry.prototype._setup = function() {
+  var self = this;
+  // TODO not cross-browser
+  this._viewport.addEventListener(transitionEnd, function() {
+    self._onTransitionEnd();
+  });
+};
+
+Masonry.prototype._onTransitionEnd = function () {
+  this._resizeViewPort();
+};
+
 /**
  * @public
  * @return Masonry
@@ -263,7 +292,7 @@ Masonry.prototype.reLayout = function() {
 
   this._performItemTransforms();
 
-  this._resizeViewPort();
+  this._expandViewPort();
 
   // TODO
   // some kind of trigger when reLayout is done?

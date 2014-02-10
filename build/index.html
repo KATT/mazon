@@ -24,9 +24,13 @@
     body {
     }
     #mazon {
-      background: #efefef;
+      background: #efefef; /* good for debugging, should be removed */
       position: relative;
       margin: 20px;
+      overflow: hidden;
+
+      -webkit-transform: translate3d(0,0,0);
+      -webkit-transition: height .8s ease-out;
     }
     article {
       border: 5px solid #222;
