@@ -7,7 +7,7 @@ Sometimes it's easier building it yourself than to get a third party component a
 
 *DEVELOPMENT UNDER PROCESS*
 
-![mazon](http://gitlab.ustwo.co.uk/KATT/mazon-component-web/raw/master/docs/mazon.gif)
+![mazon](/docs/mazon.gif)
 
 ## Languages
 
